@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.0"
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "dev.golony.pubtrans4watch"
@@ -28,7 +28,14 @@ dependencies {
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.wear:wear:1.2.0'
+//    implementation 'androidx.wear:wear:1.2.0'   // 1.2.0은 API Lev 수정 후 사용가능
     compileOnly 'com.google.android.wearable:wearable:2.8.1'
     wearApp project(":wear")
+
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+    // WorkManager 의존성 이슈로 인해 API Lev 31 업그레이드 필요
+    // Watch 4의 버전업 이전까지는 아래처럼 이전 버전 호출 필요
+    // https://stackoverflow.com/questions/69037481/android-app-wont-build-the-mincompilesdk-31-specified-in-a-dependencys-an
+    implementation 'androidx.wear:wear:1.1.0'
 }
