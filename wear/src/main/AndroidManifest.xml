@@ -4,6 +4,11 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
+    <!--위치 관련 권한-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+
     <uses-feature android:name="android.hardware.type.watch"/>
 
     <application
@@ -33,6 +38,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
