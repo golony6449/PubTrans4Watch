@@ -33,6 +33,7 @@ dependencies {
     wearApp project(":wear")
 
     implementation 'com.google.android.gms:play-services-location:18.0.0'
+    implementation 'com.android.volley:volley:1.1.1'
 
     // WorkManager 의존성 이슈로 인해 API Lev 31 업그레이드 필요
     // Watch 4의 버전업 이전까지는 아래처럼 이전 버전 호출 필요

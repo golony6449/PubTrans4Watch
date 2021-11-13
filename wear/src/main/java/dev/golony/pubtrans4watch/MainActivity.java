@@ -1,6 +1,7 @@
 package dev.golony.pubtrans4watch;
 
 import android.Manifest;
+import android.app.DownloadManager;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -10,12 +11,19 @@ import android.util.Log;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.*;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MainActivity extends WearableActivity {
 
     private TextView mTextView;
+    private TextView mTextView2;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location mCurrentLocation;
 
@@ -27,6 +35,8 @@ public class MainActivity extends WearableActivity {
         setContentView(R.layout.activity_main);
 
         mTextView = (TextView) findViewById(R.id.text);
+        mTextView2 = (TextView) findViewById(R.id.textView);
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Enables Always-on
@@ -53,12 +63,32 @@ public class MainActivity extends WearableActivity {
                 }
 
                 for (Location loc : locationResult.getLocations()){
-                    Log.i("INFO", "Location Updated");
+//                    Log.i("INFO", "Location Updated");
                     mCurrentLocation = loc;
                     mTextView.setText(Double.toString(loc.getAltitude()) + "  " + Double.toString(loc.getLongitude()));
                 }
             }
         };
+
+        // API 요청 DEMO
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://www.example.com";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response){
+                mTextView2.setText(response.substring(0, 500));
+            }
+        },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        mTextView2.setText("That didn't work!");
+                    }
+                });
+
+        queue.add(stringRequest);
     }
 
     @Override

@@ -5,9 +5,12 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <!--위치 관련 권한-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>Untitled Diagram.drawio
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
+    <!--통신 관련 권한-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature android:name="android.hardware.type.watch"/>
 
