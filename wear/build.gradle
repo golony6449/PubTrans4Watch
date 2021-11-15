@@ -39,4 +39,9 @@ dependencies {
     // Watch 4의 버전업 이전까지는 아래처럼 이전 버전 호출 필요
     // https://stackoverflow.com/questions/69037481/android-app-wont-build-the-mincompilesdk-31-specified-in-a-dependencys-an
     implementation 'androidx.wear:wear:1.1.0'
+
+    // Sqlite -> Room 사용
+    def room_version = "2.3.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 }
