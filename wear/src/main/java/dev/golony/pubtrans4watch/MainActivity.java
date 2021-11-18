@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.room.Room;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -19,15 +20,25 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.*;
 import com.google.android.gms.tasks.OnSuccessListener;
+import dev.golony.pubtrans4watch.db.position.Position;
+import dev.golony.pubtrans4watch.db.position.PositionDatabase;
+
+import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends WearableActivity {
 
     private TextView mTextView;
     private TextView mTextView2;
+    private TextView mTextView3;
+    private TextView timestamp;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location mCurrentLocation;
 
     private LocationCallback locationCallback;
+
+    private PositionDatabase posDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +47,21 @@ public class MainActivity extends WearableActivity {
 
         mTextView = (TextView) findViewById(R.id.text);
         mTextView2 = (TextView) findViewById(R.id.textView);
+        mTextView3 = (TextView) findViewById(R.id.textView2);
+        timestamp = (TextView) findViewById(R.id.lastUpdateTime);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        posDatabase = Room.databaseBuilder(getApplicationContext(), PositionDatabase.class, "pubtrans4watch_inside.db")
+                .allowMainThreadQueries()
+                .createFromAsset("pubtrans4watch.db")
+                .build();
+        List<Position> res = posDatabase.positionDao().getAll();
+
+        for (int i = 0; i < res.size(); i++){
+            Log.d("DB", "Data: " + res.get(i).toString());
+        }
+
 
         // Enables Always-on
         setAmbientEnabled();
@@ -65,7 +89,22 @@ public class MainActivity extends WearableActivity {
                 for (Location loc : locationResult.getLocations()){
 //                    Log.i("INFO", "Location Updated");
                     mCurrentLocation = loc;
-                    mTextView.setText(Double.toString(loc.getAltitude()) + "  " + Double.toString(loc.getLongitude()));
+                    mTextView.setText(Double.toString(loc.getLatitude()) + "  " + Double.toString(loc.getLongitude()));
+
+                    List<Position> nearByStation = posDatabase.positionDao().getNearBy(loc.getLatitude(), loc.getLongitude());
+
+                    String res = new String("");
+                    if (nearByStation.size() == 0) {
+                        res = "근처 역 없음";
+                    } else {
+                        for (Position position : nearByStation) {
+                            res += position;
+                            res += "\n";
+                        }
+                    }
+
+                    mTextView3.setText(res);
+                    timestamp.setText(LocalTime.now().toString());
                 }
             }
         };
@@ -78,7 +117,7 @@ public class MainActivity extends WearableActivity {
                 new Response.Listener<String>() {
             @Override
             public void onResponse(String response){
-                mTextView2.setText(response.substring(0, 500));
+                mTextView2.setText(response.substring(0, 10));
             }
         },
                 new Response.ErrorListener(){

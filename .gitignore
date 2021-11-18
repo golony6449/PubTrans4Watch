@@ -12,3 +12,4 @@
 /captures
 .externalNativeBuild
 .cxx
+/wear/src/main/assets/
