@@ -89,7 +89,7 @@ public class MainActivity extends WearableActivity {
                 for (Location loc : locationResult.getLocations()){
 //                    Log.i("INFO", "Location Updated");
                     mCurrentLocation = loc;
-                    mTextView.setText(Double.toString(loc.getLatitude()) + "  " + Double.toString(loc.getLongitude()));
+                    mTextView.setText("Latitude: " + Double.toString(loc.getLatitude()) + "\nLongitude: " + Double.toString(loc.getLongitude()));
 
                     List<Position> nearByStation = posDatabase.positionDao().getNearBy(loc.getLatitude(), loc.getLongitude());
 
@@ -117,7 +117,7 @@ public class MainActivity extends WearableActivity {
                 new Response.Listener<String>() {
             @Override
             public void onResponse(String response){
-                mTextView2.setText(response.substring(0, 10));
+                mTextView2.setText(response.substring(0, 500));
             }
         },
                 new Response.ErrorListener(){

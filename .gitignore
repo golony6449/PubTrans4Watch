@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 /wear/src/main/assets/
+/.idea/
