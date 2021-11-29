@@ -33,7 +33,7 @@
             <TextView
                     android:text="Communication Demo"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/textView"/>
+                    android:layout_height="wrap_content" android:id="@+id/textView" android:gravity="center"/>
         </LinearLayout>
     </ScrollView>
 </androidx.wear.widget.BoxInsetLayout>

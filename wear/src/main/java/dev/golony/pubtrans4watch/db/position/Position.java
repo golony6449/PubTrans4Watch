@@ -18,4 +18,8 @@ public class Position {
     public String toString(){
         return line_num + "   " + station_name;
     }
+
+    public String getStation_name() {
+        return station_name;
+    }
 }

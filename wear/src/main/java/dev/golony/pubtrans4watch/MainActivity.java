@@ -16,16 +16,21 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.*;
 import com.google.android.gms.tasks.OnSuccessListener;
 import dev.golony.pubtrans4watch.db.position.Position;
 import dev.golony.pubtrans4watch.db.position.PositionDatabase;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends WearableActivity {
 
@@ -86,8 +91,8 @@ public class MainActivity extends WearableActivity {
                    Log.d("LOG", "onLocationResult: null");
                 }
 
-                for (Location loc : locationResult.getLocations()){
-//                    Log.i("INFO", "Location Updated");
+                for (Location loc : locationResult.getLocations()) {
+                    //                    Log.i("INFO", "Location Updated");
                     mCurrentLocation = loc;
                     mTextView.setText("Latitude: " + Double.toString(loc.getLatitude()) + "\nLongitude: " + Double.toString(loc.getLongitude()));
 
@@ -97,9 +102,17 @@ public class MainActivity extends WearableActivity {
                     if (nearByStation.size() == 0) {
                         res = "근처 역 없음";
                     } else {
-                        for (Position position : nearByStation) {
+
+                        // 도착정보 초기화
+                        mTextView2.setText("");
+
+                        for (int i = 0; i < nearByStation.size(); i++) {
+                            Position position = nearByStation.get(i);
+
                             res += position;
                             res += "\n";
+
+                            callTopisApi(position);
                         }
                     }
 
@@ -109,25 +122,6 @@ public class MainActivity extends WearableActivity {
             }
         };
 
-        // API 요청 DEMO
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://www.example.com";
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response){
-                mTextView2.setText(response.substring(0, 500));
-            }
-        },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        mTextView2.setText("That didn't work!");
-                    }
-                });
-
-        queue.add(stringRequest);
     }
 
     @Override
@@ -154,5 +148,59 @@ public class MainActivity extends WearableActivity {
         Log.i("INFO", "onPause: changed");
 
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+    private void callTopisApi(Position stationInfo){
+        // API 요청 DEMO
+        String stationName = stationInfo.getStation_name();
+
+        System.out.println("역 포함여부: " + stationInfo.getStation_name().contains("역"));
+        if (stationInfo.getStation_name().contains("역")){
+            stationName = stationName.substring(0, stationName.length()-1);
+        }
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://pubtrans4watch.golony.dev/v1/ArrivalInfo/" + stationName;
+        System.out.println("url: " + url);
+
+        String finalStationName = stationName;
+        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject){
+                        String data = (String) mTextView2.getText();
+
+                        data += "\n\n" + stationInfo + "\n";
+
+                        try {
+                            System.out.println();
+                            System.out.println(jsonObject);
+                            JSONArray arrivalData = jsonObject.getJSONObject("data").getJSONArray("realtimeArrivalList");
+
+                            for (int i = 0; i < arrivalData.length(); i++){
+                                JSONObject jsonData = arrivalData.getJSONObject(i);
+
+                                data += jsonData.getString("trainLineNm");
+                                data += "\n";
+                                data += jsonData.getString("arvlMsg2");
+                                data += "\n\n";
+                            }
+
+                            mTextView2.setText(data);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("ERROR", "onErrorResponse: ", error);
+                        mTextView2.setText("That didn't work!");
+                    }
+                });
+
+        queue.add(stringRequest);
     }
 }
