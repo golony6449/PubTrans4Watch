@@ -96,7 +96,7 @@ public class MainActivity extends WearableActivity {
                     mCurrentLocation = loc;
                     mTextView.setText("Latitude: " + Double.toString(loc.getLatitude()) + "\nLongitude: " + Double.toString(loc.getLongitude()));
 
-                    List<Position> nearByStation = posDatabase.positionDao().getNearBy(loc.getLatitude(), loc.getLongitude());
+                    List<Position> nearByStation = posDatabase.positionDao().getNearBy(loc.getLatitude(), loc.getLongitude(), 3);
 
                     String res = new String("");
                     if (nearByStation.size() == 0) {
