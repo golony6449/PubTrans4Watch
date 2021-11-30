@@ -103,16 +103,18 @@ public class MainActivity extends WearableActivity {
                         res = "근처 역 없음";
                     } else {
 
-                        // 도착정보 초기화
-                        mTextView2.setText("");
-
                         for (int i = 0; i < nearByStation.size(); i++) {
                             Position position = nearByStation.get(i);
 
                             res += position;
                             res += "\n";
 
-                            callTopisApi(position);
+                            if (i == 0) {
+                                callTopisApi(position, true);
+                            } else {
+                                callTopisApi(position, false);
+                            }
+
                         }
                     }
 
@@ -150,7 +152,11 @@ public class MainActivity extends WearableActivity {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
-    private void callTopisApi(Position stationInfo){
+    private void callTopisApi(Position stationInfo, boolean clear){
+        if (clear){
+            mTextView2.setText("");
+        }
+
         // API 요청 DEMO
         String stationName = stationInfo.getStation_name();
 
