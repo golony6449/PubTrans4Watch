@@ -10,30 +10,39 @@
         tools:deviceIds="wear"
         android:padding="@dimen/box_inset_layout_padding">
 
-    <ScrollView
+    <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <LinearLayout
-                android:orientation="vertical"
+        <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:gravity="center">
-            <TextView
-                    android:text="TextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/lastUpdateTime"/>
-            <TextView
-                    android:id="@+id/text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Currnet Location"/>
-            <TextView
-                    android:text="NearBy"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/textView2"/>
-            <TextView
-                    android:text="Communication Demo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/textView" android:gravity="center"/>
-        </LinearLayout>
-    </ScrollView>
+                android:layout_height="match_parent">
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:gravity="center">
+                <TextView
+                        android:text="TextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/lastUpdateTime"/>
+                <TextView
+                        android:id="@+id/text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Currnet Location"/>
+                <TextView
+                        android:text="NearBy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/textView2"/>
+                <TextView
+                        android:text="Communication Demo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/textView" android:gravity="center"
+                        android:visibility="gone"/>
+                <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/ListArrivalInfo"/>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
 </androidx.wear.widget.BoxInsetLayout>

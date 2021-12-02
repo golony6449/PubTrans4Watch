@@ -11,6 +11,8 @@ import android.util.Log;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,6 +25,7 @@ import com.google.android.gms.location.*;
 import com.google.android.gms.tasks.OnSuccessListener;
 import dev.golony.pubtrans4watch.db.position.Position;
 import dev.golony.pubtrans4watch.db.position.PositionDatabase;
+import dev.golony.pubtrans4watch.view.ArrivalInfoAdaptor;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends WearableActivity {
+
+    RecyclerView mRecyclerView;
 
     private TextView mTextView;
     private TextView mTextView2;
@@ -49,6 +54,13 @@ public class MainActivity extends WearableActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // TODO 임시
+        mRecyclerView = findViewById(R.id.ListArrivalInfo);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setHasFixedSize(true);
+
+        // 임시끝
 
         mTextView = (TextView) findViewById(R.id.text);
         mTextView2 = (TextView) findViewById(R.id.textView);
@@ -70,7 +82,7 @@ public class MainActivity extends WearableActivity {
 
         // Enables Always-on
         setAmbientEnabled();
-        
+
         // TODO: 권한이 없는 경우 권한 요청기능 추가
         // 위치 정보 가져오기
 //        fusedLocationProviderClient.getLastLocation()
@@ -97,6 +109,8 @@ public class MainActivity extends WearableActivity {
                     mTextView.setText("Latitude: " + Double.toString(loc.getLatitude()) + "\nLongitude: " + Double.toString(loc.getLongitude()));
 
                     List<Position> nearByStation = posDatabase.positionDao().getNearBy(loc.getLatitude(), loc.getLongitude(), 3);
+
+                    mRecyclerView.setAdapter(new ArrivalInfoAdaptor(nearByStation));
 
                     String res = new String("");
                     if (nearByStation.size() == 0) {
@@ -153,9 +167,6 @@ public class MainActivity extends WearableActivity {
     }
 
     private void callTopisApi(Position stationInfo, boolean clear){
-        if (clear){
-            mTextView2.setText("");
-        }
 
         // API 요청 DEMO
         String stationName = stationInfo.getStation_name();
@@ -175,6 +186,9 @@ public class MainActivity extends WearableActivity {
                     @Override
                     public void onResponse(JSONObject jsonObject){
                         String data = (String) mTextView2.getText();
+                        if (clear) {
+                            data = "";
+                        }
 
                         data += "\n\n" + stationInfo + "\n";
 

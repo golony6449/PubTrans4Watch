@@ -28,6 +28,7 @@ dependencies {
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
 //    implementation 'androidx.wear:wear:1.2.0'   // 1.2.0은 API Lev 수정 후 사용가능
     compileOnly 'com.google.android.wearable:wearable:2.8.1'
     wearApp project(":wear")
@@ -44,4 +45,13 @@ dependencies {
     def room_version = "2.3.0"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+
+    // 타일적용
+//    // Use to implement support for wear tiles
+//    implementation "androidx.wear.tiles:tiles:1.0.0"
+//
+//    // Use to preview wear tiles in your own app
+//    debugImplementation "androidx.wear.tiles:tiles-renderer:1.0.0"
 }
