@@ -2,6 +2,7 @@ package dev.golony.pubtrans4watch;
 
 import android.Manifest;
 import android.app.DownloadManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.*;
 import com.google.android.gms.tasks.OnSuccessListener;
+import dev.golony.pubtrans4watch.api.TopisHelper;
 import dev.golony.pubtrans4watch.db.position.Position;
 import dev.golony.pubtrans4watch.db.position.PositionDatabase;
 import dev.golony.pubtrans4watch.view.ArrivalInfoAdaptor;
@@ -31,16 +33,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends WearableActivity {
+    private static Context context;
 
     RecyclerView mRecyclerView;
+    ArrivalInfoAdaptor arrivalInfoAdaptor;
 
     private TextView mTextView;
-    private TextView mTextView2;
     private TextView mTextView3;
     private TextView timestamp;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -55,15 +59,17 @@ public class MainActivity extends WearableActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // TODO 임시
+        // https://stackoverflow.com/questions/2002288/static-way-to-get-context-in-android
+        MainActivity.context = getApplicationContext();
+
         mRecyclerView = findViewById(R.id.ListArrivalInfo);
+        arrivalInfoAdaptor = new ArrivalInfoAdaptor(new ArrayList<Position>());
+
+        mRecyclerView.setAdapter(arrivalInfoAdaptor);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
 
-        // 임시끝
-
         mTextView = (TextView) findViewById(R.id.text);
-        mTextView2 = (TextView) findViewById(R.id.textView);
         mTextView3 = (TextView) findViewById(R.id.textView2);
         timestamp = (TextView) findViewById(R.id.lastUpdateTime);
 
@@ -75,9 +81,10 @@ public class MainActivity extends WearableActivity {
                 .build();
         List<Position> res = posDatabase.positionDao().getAll();
 
-        for (int i = 0; i < res.size(); i++){
-            Log.d("DB", "Data: " + res.get(i).toString());
-        }
+        // TODO DB 초기화 테스트트
+//       for (int i = 0; i < res.size(); i++){
+//            Log.d("DB", "Data: " + res.get(i).toString());
+//        }
 
 
         // Enables Always-on
@@ -85,14 +92,6 @@ public class MainActivity extends WearableActivity {
 
         // TODO: 권한이 없는 경우 권한 요청기능 추가
         // 위치 정보 가져오기
-//        fusedLocationProviderClient.getLastLocation()
-//                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-//                    @Override
-//                    public void onSuccess(Location location) {
-//                        mCurrentLocation = location;
-//                        mTextView.setText(Double.toString(location.getAltitude()) + "  " + Double.toString(location.getLongitude()));
-//                    }
-//                });
 
         locationCallback = new LocationCallback() {
             @Override
@@ -110,7 +109,9 @@ public class MainActivity extends WearableActivity {
 
                     List<Position> nearByStation = posDatabase.positionDao().getNearBy(loc.getLatitude(), loc.getLongitude(), 3);
 
-                    mRecyclerView.setAdapter(new ArrivalInfoAdaptor(nearByStation));
+//                    mRecyclerView.setAdapter(new ArrivalInfoAdaptor(nearByStation));
+                    arrivalInfoAdaptor.updateStationInfo(nearByStation);
+                    arrivalInfoAdaptor.notifyDataSetChanged();
 
                     String res = new String("");
                     if (nearByStation.size() == 0) {
@@ -124,9 +125,9 @@ public class MainActivity extends WearableActivity {
                             res += "\n";
 
                             if (i == 0) {
-                                callTopisApi(position, true);
+                                TopisHelper.callTopisApi(position);
                             } else {
-                                callTopisApi(position, false);
+                                TopisHelper.callTopisApi(position);
                             }
 
                         }
@@ -166,61 +167,7 @@ public class MainActivity extends WearableActivity {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
-    private void callTopisApi(Position stationInfo, boolean clear){
-
-        // API 요청 DEMO
-        String stationName = stationInfo.getStation_name();
-
-        System.out.println("역 포함여부: " + stationInfo.getStation_name().contains("역"));
-        if (stationInfo.getStation_name().contains("역")){
-            stationName = stationName.substring(0, stationName.length()-1);
-        }
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://pubtrans4watch.golony.dev/v1/ArrivalInfo/" + stationName;
-        System.out.println("url: " + url);
-
-        String finalStationName = stationName;
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject jsonObject){
-                        String data = (String) mTextView2.getText();
-                        if (clear) {
-                            data = "";
-                        }
-
-                        data += "\n\n" + stationInfo + "\n";
-
-                        try {
-                            System.out.println();
-                            System.out.println(jsonObject);
-                            JSONArray arrivalData = jsonObject.getJSONObject("data").getJSONArray("realtimeArrivalList");
-
-                            for (int i = 0; i < arrivalData.length(); i++){
-                                JSONObject jsonData = arrivalData.getJSONObject(i);
-
-                                data += jsonData.getString("trainLineNm");
-                                data += "\n";
-                                data += jsonData.getString("arvlMsg2");
-                                data += "\n\n";
-                            }
-
-                            mTextView2.setText(data);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("ERROR", "onErrorResponse: ", error);
-                        mTextView2.setText("That didn't work!");
-                    }
-                });
-
-        queue.add(stringRequest);
+    public static Context getAppContext(){
+        return MainActivity.context;
     }
 }
