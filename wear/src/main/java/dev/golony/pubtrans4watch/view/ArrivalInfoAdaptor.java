@@ -19,10 +19,10 @@ public class ArrivalInfoAdaptor extends RecyclerView.Adapter<ArrivalInfoAdaptor.
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout view;
 
-        ImageView image;
-        TextView stationName;
-        TextView nearestArrivalInfoTv;
-        TextView nearerArrivalInfoTv;
+        private final ImageView image;
+        private final TextView stationName;
+        private final TextView nearestArrivalInfoTv;
+        private final TextView nearerArrivalInfoTv;
 
         public ViewHolder(View view){
             super(view);
@@ -52,7 +52,7 @@ public class ArrivalInfoAdaptor extends RecyclerView.Adapter<ArrivalInfoAdaptor.
     @Override
     public ArrivalInfoAdaptor.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.arrival_info2, parent, false);
+                .inflate(R.layout.arrival_info, parent, false);
 
         return new ViewHolder(view);
     }
@@ -72,5 +72,9 @@ public class ArrivalInfoAdaptor extends RecyclerView.Adapter<ArrivalInfoAdaptor.
     @Override
     public int getItemCount() {
         return this.listStationInfo.size();
+    }
+
+    public void updateStationInfo(List<Position> newStationInfo){
+        this.listStationInfo = newStationInfo;
     }
 }
