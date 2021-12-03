@@ -19,18 +19,24 @@ public class ArrivalInfoAdaptor extends RecyclerView.Adapter<ArrivalInfoAdaptor.
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout view;
 
+        ImageView image;
+        TextView stationName;
+        TextView nearestArrivalInfoTv;
+        TextView nearerArrivalInfoTv;
+
         public ViewHolder(View view){
             super(view);
 
-//            ImageView photo = view.findViewById(R.id.dogPhotoImg);
-//            TextView breed = view.findViewById(R.id.dogBreedTv);
-//            TextView age = view.findViewById(R.id.dogAgeTv);
-//            TextView gender = view.findViewById(R.id.dogGenderTv);
-//
-//            photo.setImageResource(R.mipmap.ic_launcher);
-//            breed.setText("breed");
-//            age.setText("123");
-//            gender.setText("TT");
+            image = view.findViewById(R.id.iconImageView);
+            stationName = view.findViewById(R.id.stationNameTv);
+            nearestArrivalInfoTv = view.findViewById(R.id.nearestArrivalInfoTv);
+            nearerArrivalInfoTv = view.findViewById(R.id.nearerArrivalInfoTv);
+        }
+
+        public void setData(ArrivalInfo info){
+            stationName.setText(info.getStationName());
+            nearestArrivalInfoTv.setText(info.getNearestArrivalInfo());
+            nearerArrivalInfoTv.setText(info.getNearerArrivalInfoTv());
         }
 
         public ConstraintLayout getView(){
@@ -53,7 +59,14 @@ public class ArrivalInfoAdaptor extends RecyclerView.Adapter<ArrivalInfoAdaptor.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Position stationInfo = this.listStationInfo.get(position);
+        ArrivalInfo arrivalInfo = new ArrivalInfo();
 
+        arrivalInfo.setStationName(stationInfo.getStation_name());
+        arrivalInfo.setNearestArrivalInfo("3분후 도착");
+        arrivalInfo.setNearerArrivalInfoTv("5분후 도착");
+
+        holder.setData(arrivalInfo);
     }
 
     @Override
