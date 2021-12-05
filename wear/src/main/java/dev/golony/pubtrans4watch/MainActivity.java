@@ -24,6 +24,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.*;
 import com.google.android.gms.tasks.OnSuccessListener;
+import dev.golony.pubtrans4watch.api.LocationHelper;
 import dev.golony.pubtrans4watch.api.TopisHelper;
 import dev.golony.pubtrans4watch.db.position.Position;
 import dev.golony.pubtrans4watch.db.position.PositionDatabase;
@@ -79,9 +80,9 @@ public class MainActivity extends WearableActivity {
                 .allowMainThreadQueries()
                 .createFromAsset("pubtrans4watch.db")
                 .build();
-        List<Position> res = posDatabase.positionDao().getAll();
 
-        // TODO DB 초기화 테스트트
+        // TODO DB 초기화 테스트
+//        List<Position> res = posDatabase.positionDao().getAll();
 //       for (int i = 0; i < res.size(); i++){
 //            Log.d("DB", "Data: " + res.get(i).toString());
 //        }
@@ -90,54 +91,8 @@ public class MainActivity extends WearableActivity {
         // Enables Always-on
         setAmbientEnabled();
 
-        // TODO: 권한이 없는 경우 권한 요청기능 추가
         // 위치 정보 가져오기
-
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-
-                if (locationResult == null){
-                   Log.d("LOG", "onLocationResult: null");
-                }
-
-                for (Location loc : locationResult.getLocations()) {
-                    //                    Log.i("INFO", "Location Updated");
-                    mCurrentLocation = loc;
-                    mTextView.setText("Latitude: " + Double.toString(loc.getLatitude()) + "\nLongitude: " + Double.toString(loc.getLongitude()));
-
-                    List<Position> nearByStation = posDatabase.positionDao().getNearBy(loc.getLatitude(), loc.getLongitude(), 3);
-
-//                    mRecyclerView.setAdapter(new ArrivalInfoAdaptor(nearByStation));
-                    arrivalInfoAdaptor.updateStationInfo(nearByStation);
-                    arrivalInfoAdaptor.notifyDataSetChanged();
-
-                    String res = new String("");
-                    if (nearByStation.size() == 0) {
-                        res = "근처 역 없음";
-                    } else {
-
-                        for (int i = 0; i < nearByStation.size(); i++) {
-                            Position position = nearByStation.get(i);
-
-                            res += position;
-                            res += "\n";
-
-                            if (i == 0) {
-                                TopisHelper.callTopisApi(position);
-                            } else {
-                                TopisHelper.callTopisApi(position);
-                            }
-
-                        }
-                    }
-
-                    mTextView3.setText(res);
-                    timestamp.setText(LocalTime.now().toString());
-                }
-            }
-        };
+        locationCallback = LocationHelper.getLocationCallback(arrivalInfoAdaptor, MainActivity.this);
 
     }
 
@@ -149,7 +104,7 @@ public class MainActivity extends WearableActivity {
 
     private void startLocationUpdates(){
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10);
+        locationRequest.setInterval(60);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         // TODO: 권한이 없는 경우 권한 요청기능 추가
