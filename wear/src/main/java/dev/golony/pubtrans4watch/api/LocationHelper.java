@@ -14,6 +14,7 @@ import dev.golony.pubtrans4watch.MainActivity;
 import dev.golony.pubtrans4watch.R;
 import dev.golony.pubtrans4watch.db.position.Position;
 import dev.golony.pubtrans4watch.db.position.PositionDatabase;
+import dev.golony.pubtrans4watch.db.position.PositionDbSingleton;
 import dev.golony.pubtrans4watch.view.ArrivalInfoAdaptor;
 
 import java.time.LocalTime;
@@ -70,8 +71,7 @@ public class LocationHelper {
     }
 
     private static List<Position> getNearByStationInfo(Location loc){
-        PositionDatabase posDatabase = Room.databaseBuilder(MainActivity.getAppContext(), PositionDatabase.class, "pubtrans4watch_inside.db").allowMainThreadQueries().build();
-
+        PositionDatabase posDatabase = PositionDbSingleton.getDatabase(null);
         List<Position> nearByStation = posDatabase.positionDao().getNearBy(loc.getLatitude(), loc.getLongitude(), 3);
         return nearByStation;
     }

@@ -28,6 +28,7 @@ import dev.golony.pubtrans4watch.api.LocationHelper;
 import dev.golony.pubtrans4watch.api.TopisHelper;
 import dev.golony.pubtrans4watch.db.position.Position;
 import dev.golony.pubtrans4watch.db.position.PositionDatabase;
+import dev.golony.pubtrans4watch.db.position.PositionDbSingleton;
 import dev.golony.pubtrans4watch.view.ArrivalInfoAdaptor;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -76,16 +77,13 @@ public class MainActivity extends WearableActivity {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        posDatabase = Room.databaseBuilder(getApplicationContext(), PositionDatabase.class, "pubtrans4watch_inside.db")
-                .allowMainThreadQueries()
-                .createFromAsset("pubtrans4watch.db")
-                .build();
+        posDatabase = PositionDbSingleton.getDatabase(getApplicationContext());
 
         // TODO DB 초기화 테스트
-//        List<Position> res = posDatabase.positionDao().getAll();
-//       for (int i = 0; i < res.size(); i++){
-//            Log.d("DB", "Data: " + res.get(i).toString());
-//        }
+        List<Position> res = posDatabase.positionDao().getAll();
+       for (int i = 0; i < res.size(); i++){
+            Log.d("DB", "Data: " + res.get(i).toString());
+        }
 
 
         // Enables Always-on
