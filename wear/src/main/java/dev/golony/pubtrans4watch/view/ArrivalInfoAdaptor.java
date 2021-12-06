@@ -9,11 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import dev.golony.pubtrans4watch.R;
+import dev.golony.pubtrans4watch.api.TopisHelper;
 import dev.golony.pubtrans4watch.db.position.Position;
+import dev.golony.pubtrans4watch.presenter.ArrivalInfoPresenter;
+import dev.golony.pubtrans4watch.presenter.ArrivalInfoPresenterInterface;
 
 import java.util.List;
 
 public class ArrivalInfoAdaptor extends RecyclerView.Adapter<ArrivalInfoAdaptor.ViewHolder> {
+    ArrivalInfoPresenterInterface.Presenter arrivalInfoPresenter;
+
     List<Position> listStationInfo;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -33,10 +38,14 @@ public class ArrivalInfoAdaptor extends RecyclerView.Adapter<ArrivalInfoAdaptor.
             nearerArrivalInfoTv = view.findViewById(R.id.nearerArrivalInfoTv);
         }
 
-        public void setData(ArrivalInfo info){
-            stationName.setText(info.getStationName());
-            nearestArrivalInfoTv.setText(info.getNearestArrivalInfo());
-            nearerArrivalInfoTv.setText(info.getNearerArrivalInfoTv());
+        public void setData(String strStationName, List<ArrivalInfo> listArrivalInfo){
+            stationName.setText(strStationName);
+
+            if (listArrivalInfo.size() > 0)
+                nearestArrivalInfoTv.setText(listArrivalInfo.get(0).getStrArrivalInfo());
+
+            if (listArrivalInfo.size() > 1)
+                nearerArrivalInfoTv.setText(listArrivalInfo.get(1).getStrArrivalInfo());
         }
 
         public ConstraintLayout getView(){
@@ -60,13 +69,15 @@ public class ArrivalInfoAdaptor extends RecyclerView.Adapter<ArrivalInfoAdaptor.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Position stationInfo = this.listStationInfo.get(position);
-        ArrivalInfo arrivalInfo = new ArrivalInfo();
 
-        arrivalInfo.setStationName(stationInfo.getStation_name());
-        arrivalInfo.setNearestArrivalInfo("3분후 도착");
-        arrivalInfo.setNearerArrivalInfoTv("5분후 도착");
+        arrivalInfoPresenter = new ArrivalInfoPresenter(this);
+        arrivalInfoPresenter.setDataFromTopis(holder, stationInfo);
+    }
 
-        holder.setData(arrivalInfo);
+    public void setResponseData(@NonNull ViewHolder holder, String stationName, List<ArrivalInfo> listArrivalInfo){
+        System.out.println("length: " + listArrivalInfo.size());
+
+        holder.setData(stationName, listArrivalInfo);
     }
 
     @Override

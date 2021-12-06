@@ -29,6 +29,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'org.jetbrains:annotations:20.1.0'
 //    implementation 'androidx.wear:wear:1.2.0'   // 1.2.0은 API Lev 수정 후 사용가능
     compileOnly 'com.google.android.wearable:wearable:2.8.1'
     wearApp project(":wear")

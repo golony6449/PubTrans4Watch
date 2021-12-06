@@ -2,8 +2,7 @@ package dev.golony.pubtrans4watch.view;
 
 public class ArrivalInfo {
     private String stationName;
-    private String nearestArrivalInfo;
-    private String nearerArrivalInfoTv;
+    private String strArrivalInfo;
 
     public String getStationName() {
         return stationName;
@@ -13,19 +12,11 @@ public class ArrivalInfo {
         this.stationName = stationName;
     }
 
-    public String getNearestArrivalInfo() {
-        return nearestArrivalInfo;
+    public String getStrArrivalInfo() {
+        return strArrivalInfo;
     }
 
-    public void setNearestArrivalInfo(String nearestArrivalInfo) {
-        this.nearestArrivalInfo = nearestArrivalInfo;
-    }
-
-    public String getNearerArrivalInfoTv() {
-        return nearerArrivalInfoTv;
-    }
-
-    public void setNearerArrivalInfoTv(String nearerArrivalInfoTv) {
-        this.nearerArrivalInfoTv = nearerArrivalInfoTv;
+    public void setStrArrivalInfo(String strArrivalInfo) {
+        this.strArrivalInfo = strArrivalInfo;
     }
 }
