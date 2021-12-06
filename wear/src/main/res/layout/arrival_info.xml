@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/nearestArrivalInfoTv"/>
         <TextView
-                android:text="TextView"
+                android:text="nearer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/nearerArrivalInfoTv"/>
     </LinearLayout>
